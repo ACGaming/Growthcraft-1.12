@@ -1,9 +1,8 @@
 buildscript {
     repositories {
-        jcenter()
         maven {
             name = "forge"
-            url = "http://files.minecraftforge.net/maven"
+            url = "https://maven.minecraftforge.net/"
         }
         maven {
             name = "sonatype"
@@ -29,52 +28,52 @@ repositories {
     mavenLocal()
     maven {
         name 'DVS1 Maven FS'
-        url 'http://dvs1.progwml6.com/files/maven'
+        url 'https://dvs1.progwml6.com/files/maven'
     }
     maven { // CraftTweaker
         name 'jared maven'
-        url "http://maven.blamejared.com/"
+        url "https://maven.blamejared.com/"
     }
     maven { // TOP
         name 'tterrag maven'
-        url "http://maven.tterrag.com/"
+        url "https://maven.tterrag.com/"
     }
     maven { // compatlayer
         name 'K-4u maven'
-        url "http://maven.k-4u.nl/"
+        url "https://maven.k-4u.nl/"
     }
     maven {
         url = "https://minecraft.curseforge.com/api/maven/"
     }
     maven {
         name 'forge'
-        url 'http://files.minecraftforge.net/maven'
+        url 'https://maven.minecraftforge.net/'
     }
     maven {
         name = "CoFH Maven"
-        url = "http://maven.covers1624.net"
+        url = "https://maven.covers1624.net"
     }
     maven {
         name "AppleCore"
-        url "http://www.ryanliptak.com/maven/"
+        url "https://www.ryanliptak.com/maven/"
     }
     maven {
         name "IC2 Forestry"
-        url "http://maven.ic2.player.to/"
+        url "https://maven.ic2.player.to/"
     }
     maven {
         // location of the maven that hosts JEI files
         name = "Progwml6 maven"
-        url = "http://dvs1.progwml6.com/files/maven"
+        url = "https://dvs1.progwml6.com/files/maven"
     }
     maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven"
-        url = "modmaven.k-4u.nl"
+        url = "https://modmaven.k-4u.nl"
     }
     maven {
         name = "hwyla"
-        url "https://maven.tehnut.info"
+        url "https://maven.mcmoddev.com"
     }
 }
 
@@ -166,6 +165,8 @@ dependencies {
     compile "thaumcraft:Thaumcraft:" + project.property('minecraft_version') + ":" + project.property('thaumcraft_version')
     compile "mcp.mobius.waila:Hwyla:" + project.property('hwyla_version')
     compile "baubles:Baubles:" + project.property('minecraft_version_short') + ":" + project.property('baubles_version')
+
+    compile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.684"
 
     runtime "mezz.jei:jei_" + project.property('minecraft_version') + ":" + project.property('jei_version')
 }
