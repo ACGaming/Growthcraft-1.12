@@ -52,19 +52,17 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
         this.hasTileEntity = true;
     }
 
-
     public GrowthcraftBlockContainer(@Nonnull Material material, @Nonnull MapColor mapColor) {
         super(material, mapColor);
         this.hasTileEntity = true;
     }
-
 
     @SuppressWarnings("deprecation")
     @Override
     public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param) {
         super.eventReceived(state, worldIn, pos, id, param);
         final TileEntity te = getTileEntity(worldIn, pos);
-        return te != null ? te.receiveClientEvent(id, param) : false;
+        return te != null && te.receiveClientEvent(id, param);
     }
 
     @Override
@@ -79,7 +77,7 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
 
     protected void fellBlockFromWrench(World world, BlockPos pos) {
         final IBlockState state = world.getBlockState(pos);
-        final List<ItemStack> drops = new ArrayList<ItemStack>();
+        final List<ItemStack> drops = new ArrayList<>();
         if (shouldDropTileStack(world, pos, state, 0)) {
             GrowthcraftLogger.getLogger(Reference.MODID).info("Dropping Tile As ItemStack");
             getTileItemStackDrops(drops, world, pos, state, 0);
@@ -181,7 +179,7 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
                     if (!ItemUtils.isEmpty(stack)) {
                         ItemUtils.spawnItemStack(world, pos, stack, rand);
                     }
-                    inventory.setInventorySlotContents(index, (ItemStack) null);
+                    inventory.setInventorySlotContents(index, ItemStack.EMPTY);
                 }
                 world.updateComparatorOutputLevel(pos, block);
             }
@@ -211,7 +209,7 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
         player.addExhaustion(0.025F);
 
         if (this.canSilkHarvest(worldIn, pos, state, player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
-            final ArrayList<ItemStack> items = new ArrayList<ItemStack>();
+            final ArrayList<ItemStack> items = new ArrayList<>();
             final ItemStack itemstack = createHarvestedBlockItemStack(worldIn, player, pos, state);
 
             if (!ItemUtils.isEmpty(itemstack)) {
@@ -226,7 +224,7 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
             harvesters.set(player);
             final int fortune = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
             dropBlockAsItem(worldIn, pos, state, fortune);
-            harvesters.set(null);
+            harvesters.remove();
         }
     }
 
@@ -260,7 +258,7 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
     @SuppressWarnings("deprecation")
     @Override
     public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        final ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
+        final ArrayList<ItemStack> ret = new ArrayList<>();
         if (shouldDropTileStack(world, pos, state, fortune)) {
             getTileItemStackDrops(ret, world, pos, state, fortune);
         } else {
@@ -342,10 +340,8 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
     public void onBlockClicked(World world, BlockPos pos, EntityPlayer player) {
         if (!world.isRemote) {
             final TileEntity te = world.getTileEntity(pos);
-            if (te instanceof IItemOperable) {
-                if (handleOnUseItem(IItemOperable.Action.LEFT, world, pos, player)) {
-                    return;
-                }
+            if (te instanceof IItemOperable && handleOnUseItem(IItemOperable.Action.LEFT, world, pos, player)) {
+                return;
             }
         }
         super.onBlockClicked(world, pos, player);
@@ -354,8 +350,7 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
     public final boolean grcOnBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (tryWrenchItem(playerIn, worldIn, pos)) return true;
         if (handleIFluidHandler(worldIn, pos, playerIn, state)) return true;
-        if (handleOnUseItem(IItemOperable.Action.RIGHT, worldIn, pos, playerIn)) return true;
-        return false;
+        return handleOnUseItem(IItemOperable.Action.RIGHT, worldIn, pos, playerIn);
     }
 
     @Override
@@ -366,12 +361,8 @@ public abstract class GrowthcraftBlockContainer extends GrowthcraftBlockBase imp
     @SuppressWarnings("unchecked")
     public <T extends TileEntity> T getTileEntity(IBlockAccess world, BlockPos pos) {
         final TileEntity te = world.getTileEntity(pos);
-        if (te != null) {
-            if (tileEntityType.isInstance(te)) {
-                return (T) te;
-            } else {
-                // warn
-            }
+        if (tileEntityType != null && tileEntityType.isInstance(te)) {
+            return (T) te;
         }
         return null;
     }
